@@ -34,7 +34,10 @@ class CircuitShow(tk.Frame):
             name = line[0]
             conn_a = line[1]
             conn_b = line[2]
-            value = line[3][:-1]
+            if line[3][-1:] == ";":
+                value = line[3][:-1]
+            else:
+                value = line[3]
             if line[0][0] == "R" or line[0][0] == "r":
                 self.resistors.append(Elements.Resistor(self, name, value, conn_a, conn_b))
             if line[0][0] == "V" or line[0][0] == "v" or line[0][0] == "f" or line[0][0] == "F":
@@ -43,6 +46,8 @@ class CircuitShow(tk.Frame):
                 self.nodes.append(conn_a)
             if conn_b not in self.nodes:
                 self.nodes.append(conn_b)
+
+
 
 
 
