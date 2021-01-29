@@ -29,6 +29,8 @@ class ElectricalElement (tk.Canvas):
         self.connection_a = conn_a
         self.connection_b = connn_b
 
+
+
         # resistor image
         self.image_label = tk.Label(self)
 
@@ -43,9 +45,17 @@ class ElectricalElement (tk.Canvas):
         self.value_label["text"] = value
 
         # packing
-        self.image_label.pack()
-        self.name_label.pack()
-        self.value_label.pack()
+        self.image_label.place(x=0, y=0)
+        self.name_label.place(x=0, y=60)
+        self.value_label.place(x=0, y=80)
+
+        # Connection buttons
+        self.a_btn = tk.Button(self, height=1, width=1)
+        self.a_btn.place(x=0, y=25)
+
+        self.b_btn = tk.Button(self, height=1, width=1)
+        self.b_btn.place(x=90, y=25)
+
 
         #position
         self.position = 0

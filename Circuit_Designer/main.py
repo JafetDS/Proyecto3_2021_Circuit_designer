@@ -1,4 +1,5 @@
 import random
+import time
 import tkinter as tk
 import Elements as Ele
 from tkinter import filedialog
@@ -45,6 +46,7 @@ class CircuitShow(tk.Frame):
             if self.old_parsed != self.controller.parsed_file:
                 self.populate_aux()
                 self.populated = True
+            time.sleep(1)
 
 
     def populate_aux(self):
@@ -55,6 +57,10 @@ class CircuitShow(tk.Frame):
             name = line[0]
             conn_a = line[1]
             conn_b = line[2]
+            x_coord = int(line[4])
+
+            y_coord = int(line[5])
+            print (name, x_coord, y_coord)
             if line[3][-1:] == ";":
                 value = line[3][:-1]
             else:
@@ -73,9 +79,13 @@ class CircuitShow(tk.Frame):
                 self.graph[conn_b][conn_a] = random.randint(0, 10)
 
             if line[0][0] == "R" or line[0][0] == "r":
-                self.resistors.append(Ele.Resistor(self, name, value, conn_a, conn_b))
+                resistor = Ele.Resistor(self, name, value, conn_a, conn_b)
+                resistor.place(x=x_coord, y = y_coord)
+                self.resistors.append(resistor)
             elif line[0][0] == "V" or line[0][0] == "v" or line[0][0] == "f" or line[0][0] == "F":
-                self.power_sources.append(Ele.Resistor(self, name, value, conn_a, conn_b))
+                power_source = Ele.PowerSource(self, name, value, conn_a, conn_b)
+                power_source.place(x=x_coord, y = y_coord)
+                self.power_sources.append(power_source)
 
             print(self.graph)
 
@@ -94,6 +104,7 @@ class CircuitBuilder(tk.Frame):
         self.add_power_btn = tk.Button(self.canvas, text="DC POWER", command=lambda: self.add_dc())
         self.add_power_btn.place(x=0, y=20)
         self.r_list = []
+
 
     def add_dc(self):
         pwr_name = tk.simpledialog.askstring (title="Power Source´s name", prompt="Write the Power Source´s name",
