@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 import Elements
 from tkinter import filedialog
@@ -28,6 +29,7 @@ class CircuitShow(tk.Frame):
         self.resistors = []
         self.power_sources = []
         self.nodes = []
+        self.graph = {}
     def populate(self):
         for i in self.parsed_file:
             line = i.split(" ")
@@ -38,15 +40,23 @@ class CircuitShow(tk.Frame):
                 value = line[3][:-1]
             else:
                 value = line[3]
+
+
+            if conn_a not in self.graph.keys():
+                self.graph[conn_a] = {}
+            if conn_b not in self.graph[conn_a].keys():
+                self.graph[conn_a][conn_b] = random.randint(0,10)
+
+            if conn_b not in self.graph.keys():
+                self.graph[conn_b] = {}
+
+            if conn_a not in self.graph[conn_b].keys():
+                self.graph[conn_b][conn_a] = random.randint(0, 10)
+
             if line[0][0] == "R" or line[0][0] == "r":
                 self.resistors.append(Elements.Resistor(self, name, value, conn_a, conn_b))
-            if line[0][0] == "V" or line[0][0] == "v" or line[0][0] == "f" or line[0][0] == "F":
+            elif line[0][0] == "V" or line[0][0] == "v" or line[0][0] == "f" or line[0][0] == "F":
                 self.power_sources.append (Elements.Resistor (self, name, value, conn_a, conn_b))
-            if conn_a not in self.nodes:
-                self.nodes.append(conn_a)
-            if conn_b not in self.nodes:
-                self.nodes.append(conn_b)
-
 
 
 
