@@ -5,6 +5,7 @@ import Elements as Ele
 from tkinter import filedialog
 from tkinter import simpledialog
 import threading
+import Grafo as g
 
 class StartPage (tk.Frame):
 
@@ -86,7 +87,7 @@ class CircuitShow(tk.Frame):
                 power_source = Ele.PowerSource(self, name, value, conn_a, conn_b)
                 power_source.place(x=x_coord, y = y_coord)
                 self.power_sources.append(power_source)
-
+            self.controller.graph.generate(self.graph)
             print(self.graph)
 
 
@@ -156,6 +157,8 @@ class Application(tk.Tk):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=0)
+
+        self.graph = g.Grafo()
 
         self.frames = {}
         for F in (StartPage, CircuitShow, CircuitBuilder):
