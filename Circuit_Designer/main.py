@@ -6,7 +6,8 @@ from tkinter import filedialog
 from tkinter import simpledialog
 import threading
 import Grafo as g
-
+import Ordenamiento as o
+from tkinter import messagebox
 
 class StartPage (tk.Frame):
     """
@@ -52,7 +53,17 @@ class CircuitShow(tk.Frame):
         self.graph = {}
         self.populated = False
         self.old_parsed = self.controller.parsed_file
+
+        #
         self.pop_thread = threading.Thread(target=self.populate_activator)
+
+        # sorting buttons
+        self.orden_ascendente_btn = tk.Button(self, text="Ordenar ▲", command=lambda: self.controller.ascendant_popup(self.resistors))
+        self.orden_ascendente_btn.place(x=0, y=700)
+
+        self.orden_descendente_btn = tk.Button(self, text="Ordenar ▼",command=lambda: self.controller.descendant_popup(self.resistors))
+        self.orden_descendente_btn.place(x=150, y=700)
+
         self.pop_thread.start()
 
     def populate_activator(self):
@@ -128,7 +139,14 @@ class CircuitBuilder(tk.Frame):
         self.add_power_btn = tk.Button(self.canvas, text="DC POWER", command=lambda: self.add_dc())
         self.add_power_btn.place(x=0, y=20)
         self.r_list = []
+        self.p_list = []
 
+        self.orden_ascendente_btn = tk.Button(self.canvas, text = "Ordenar ▲",command=lambda: self.controller.ascendant_popup(self.r_list))
+        self.orden_ascendente_btn.place(x=0, y=700)
+
+
+        self.orden_descendente_btn = tk.Button(self.canvas, text = "Ordenar ▼",command=lambda: self.controller.descendant_popup(self.r_list))
+        self.orden_descendente_btn.place(x=150, y=700)
 
     def add_dc(self):
         """
@@ -142,7 +160,7 @@ class CircuitBuilder(tk.Frame):
         pwr_value = tk.simpledialog.askstring (title="Power Source´s value", prompt="Write the power source´s value",
                                                     parent=self.canvas)
         pw = Ele.PowerSource(self.canvas, pwr_name, pwr_value)
-        # self.r_list.append(r)
+        self.p_list.append(pw)
         pw.place(x=300, y=300)
 
         self.make_draggable(pw)
@@ -160,7 +178,7 @@ class CircuitBuilder(tk.Frame):
         resistor_value = tk.simpledialog.askstring(title="Resistor´s value", prompt="Write the resistor´s value",
                                                    parent=self.canvas)
         r = Ele.Resistor(self.canvas, resistor_name, resistor_value)
-        # self.r_list.append(r)
+        self.r_list.append(r)
         r.place(x=300, y=300)
         self.make_draggable(r)
         r.bind("<Button-3>",  r.rotate)
@@ -217,6 +235,34 @@ class Application(tk.Tk):
 
     def getnetlist(self):
         return self.netlist_file
+
+    def ascendant_popup(self, lista):
+        messagebox.showinfo(title="ascendant order", message=str(self.sort_elements(lista, "▲")))
+
+    def descendant_popup(self, lista):
+        messagebox.showinfo(title="descendant order", message=str(self.sort_elements(lista, "▼")))
+
+    def sort_elements(self, lista, order):
+        """
+
+        Parameters
+        ----------
+        lista
+        order
+
+        Returns
+        -------
+        an ordered list in ascendant or descendent order
+        """
+        names = []
+        for i in lista:
+            names.append(i.get_name())
+        ordered_names =[]
+        if order == "▲":
+            ordered_names = o.Ordenamiento.qsaux(names)
+        elif order == "▼":
+            ordered_names = o.Ordenamiento.insertsort(names)
+        return ordered_names
 
 
 app = Application()
