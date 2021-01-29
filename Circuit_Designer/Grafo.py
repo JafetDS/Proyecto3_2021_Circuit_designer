@@ -19,6 +19,15 @@ class Grafo:
 	def setNodo(self,node):
 		self.NodeList.append
 
+	def generate(self,Dic):
+		List = []
+		for key in Dic:
+			newNode = Nodo(key)
+			for keys in Dic[key]:
+				newNode.setConnections(keys,Dic[key][keys])
+			List.append(newNode)
+			
+
 
 
 
