@@ -8,7 +8,10 @@ import threading
 import Grafo as g
 
 class StartPage (tk.Frame):
-
+    """
+    This is the start page frame. It offers the possibility between choosing a netlist file to build a circuit or building
+    it in the interface
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -22,12 +25,22 @@ class StartPage (tk.Frame):
         build_btn.pack()
 
     def go_to_cicuit(self):
+        """
+        It goes to frame with the circuit built from a Netlist file
+        Returns
+        -------
+
+        """
         self.controller.set_netlist()
         self.controller.show_frame("CircuitShow")
         self.controller.parsed_file = self.controller.getnetlist().readlines()
 
 
 class CircuitShow(tk.Frame):
+    """
+    It shows a circuit built from a netlist file and exports it to a graph to calculate the path with less tension
+    between two nodes
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -51,6 +64,12 @@ class CircuitShow(tk.Frame):
 
 
     def populate_aux(self):
+        """
+        It creates the objects (resistors and power sources) that are dictated in the netlist and shows them on the screen
+        Returns
+        -------
+
+        """
         # format of the netlist is:
         # name connector_a connector_b value coordx coordy
         for i in self.controller.parsed_file:
@@ -92,6 +111,9 @@ class CircuitShow(tk.Frame):
 
 
 class CircuitBuilder(tk.Frame):
+    """
+    On this fram you build your own circuit by creating and moving aroound resistors and direct current power sources
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -108,6 +130,12 @@ class CircuitBuilder(tk.Frame):
 
 
     def add_dc(self):
+        """
+        it add a direct current power source to the screen with name and value specified by the user
+        Returns
+        -------
+
+        """
         pwr_name = tk.simpledialog.askstring (title="Power Source´s name", prompt="Write the Power Source´s name",
                                                    parent=self.canvas)
         pwr_value = tk.simpledialog.askstring (title="Power Source´s value", prompt="Write the power source´s value",
@@ -120,6 +148,12 @@ class CircuitBuilder(tk.Frame):
         pw.bind ("<Button-3>", pw.rotate)
 
     def add_resistor(self):
+        """
+                it add a resistor to the screen with name and value specified by the user
+                Returns
+                -------
+
+                """
         resistor_name = tk.simpledialog.askstring(title="Resistor´s name", prompt="Write the resistor´s name"
                                                   , parent=self.canvas)
         resistor_value = tk.simpledialog.askstring(title="Resistor´s value", prompt="Write the resistor´s value",
@@ -131,6 +165,9 @@ class CircuitBuilder(tk.Frame):
         r.bind("<Button-3>",  r.rotate)
 
     def make_draggable(self, widget):
+        """
+        it allows the electronic elements to be dragged around the screen
+        """
         widget.bind("<Button-1>", self.on_drag_start)
         widget.bind ("<B1-Motion>", self.on_drag_motion)
     def on_drag_start(self, event):
@@ -169,10 +206,12 @@ class Application(tk.Tk):
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
+        """It shows a specifies frame"""
         frame = self.frames[page_name]
         frame.tkraise()
 
     def set_netlist(self):
+        """it sets the netlist attribute according to the file that the user chooses"""
         self.netlist_file = filedialog.askopenfile(mode="r", filetypes=[("Netlist files", "*.cir")])
 
     def getnetlist(self):
