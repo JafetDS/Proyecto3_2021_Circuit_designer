@@ -7,7 +7,6 @@ class ElectricalElement (tk.Canvas):
     this class is inherited from tkinter Canvas. It shows an image of an electrical element and its attributes
 
     ...
-
     Attributes
     ----------
     name_label : tk.Label
@@ -22,13 +21,13 @@ class ElectricalElement (tk.Canvas):
     set_name(name)
         Sets the text of the name_label to the input parameter
     """
-    def __init__(self, master, name, value, conn_a, connn_b):
+    def __init__(self, master, name, value, conn_a=None, connn_b=None):
         tk.Canvas.__init__(self, master=master)
         self.config(width=100, height=150)
 
         # Connections
-        self.connection_a = None
-        self.connection_b = None
+        self.connection_a = conn_a
+        self.connection_b = connn_b
 
         # resistor image
         self.image_label = tk.Label(self)
@@ -48,6 +47,8 @@ class ElectricalElement (tk.Canvas):
         self.name_label.pack()
         self.value_label.pack()
 
+        #position
+        self.position = 0
     def set_image(self, imagepath):
         load = Image.open(imagepath)
         render = ImageTk.PhotoImage(load)
@@ -63,14 +64,29 @@ class ElectricalElement (tk.Canvas):
     def get_name(self):
         return self.name_label["text"]
 
+
 class PowerSource(ElectricalElement):
-    def __int__(self, master, name, value, conn_a, conn_b):
+    def __init__(self,master, name, value, conn_a=None, conn_b=None):
         ElectricalElement.__init__(self, master, name, value, conn_a, conn_b)
         self.set_image("images/Fuente.png")
         self.update()
+    def rotate(self, event):
+        if self.position==1:
+            self.set_image("images/Fuente.png")
+            self.position = 0
+        else:
+            self.set_image("images/Fuente_rotada.png")
+            self.position = 1
 
 class Resistor(ElectricalElement):
-    def __init__(self,master, name, value, conn_a, conn_b):
+    def __init__(self,master, name, value, conn_a=None, conn_b=None):
         ElectricalElement.__init__(self, master, name, value, conn_a, conn_b)
         self.set_image("images/resistorsmall.png")
         self.update()
+    def rotate(self, event):
+        if self.position==1:
+            self.set_image("images/resistorsmall.png")
+            self.position = 0
+        else:
+            self.set_image("images/resistorsmall_rotada.png")
+            self.position = 1
