@@ -76,6 +76,9 @@ class ElectricalElement (tk.Canvas):
 
 
 class PowerSource(ElectricalElement):
+    """
+
+    """
     def __init__(self,master, name, value, conn_a=None, conn_b=None):
         ElectricalElement.__init__(self, master, name, value, conn_a, conn_b)
         self.set_image("images/Fuente.png")
@@ -94,6 +97,7 @@ class Resistor(ElectricalElement):
         ElectricalElement.__init__(self, master, name, value, conn_a, conn_b)
         self.set_image("images/resistorsmall.png")
         self.update()
+
     def rotate(self, event):
         if self.position==1:
             self.set_image("images/resistorsmall.png")
