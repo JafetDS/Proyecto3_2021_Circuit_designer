@@ -3,8 +3,10 @@ import tkinter as tk
 import Elements as Ele
 from tkinter import filedialog
 from tkinter import simpledialog
+import threading
 
 class StartPage (tk.Frame):
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -16,10 +18,11 @@ class StartPage (tk.Frame):
 
         build_btn = tk.Button(self, text="Build your circuit", command= lambda: controller.show_frame("CircuitBuilder"))
         build_btn.pack()
+
     def go_to_cicuit(self):
         self.controller.set_netlist()
         self.controller.show_frame("CircuitShow")
-        self.controller.parsedfile = self.controller.getnetlist ().readlines ()
+        self.controller.parsed_file = self.controller.getnetlist().readlines()
 
 
 class CircuitShow(tk.Frame):
@@ -31,14 +34,22 @@ class CircuitShow(tk.Frame):
         self.power_sources = []
         self.nodes = []
         self.graph = {}
+        self.populated = False
+        self.old_parsed = self.controller.parsed_file
+        self.pop_thread = threading.Thread(target=self.populate_activator)
+        self.pop_thread.start()
 
+    def populate_activator(self):
 
-    def populate_activator(self, oldfile):
-        if oldfile == self.controller.parsedfile:
-            self.populate_activator(self.parsed_file)
+        while not self.populated:
+            if self.old_parsed != self.controller.parsed_file:
+                self.populate_aux()
+                self.populated = True
 
 
     def populate_aux(self):
+        # format of the netlist is:
+        # name connector_a connector_b value coordx coordy
         for i in self.controller.parsed_file:
             line = i.split(" ")
             name = line[0]
@@ -53,7 +64,7 @@ class CircuitShow(tk.Frame):
             if conn_a not in self.graph.keys():
                 self.graph[conn_a] = {}
             if conn_b not in self.graph[conn_a].keys():
-                self.graph[conn_a][conn_b] = random.randint(0,10)
+                self.graph[conn_a][conn_b] = random.randint(0, 10)
 
             if conn_b not in self.graph.keys():
                 self.graph[conn_b] = {}
@@ -73,20 +84,23 @@ class CircuitBuilder(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        self.config (width=1280, height=720)
+        self.config(width=1280, height=720)
+        self.canvas = tk.Canvas(self)
+        self.canvas.config(width=1280, height=720)
+        self.canvas.pack()
 
-        self.add_resistor_btn = tk.Button(self, text= "RESISTOR", command=lambda: self.add_resistor())
+        self.add_resistor_btn = tk.Button(self.canvas, text= "RESISTOR", command=lambda: self.add_resistor())
         self.add_resistor_btn.place(x=0, y=0)
-        self.add_power_btn = tk.Button(self, text="DC POWER", command=lambda: self.add_dc())
+        self.add_power_btn = tk.Button(self.canvas, text="DC POWER", command=lambda: self.add_dc())
         self.add_power_btn.place(x=0, y=20)
         self.r_list = []
 
     def add_dc(self):
         pwr_name = tk.simpledialog.askstring (title="Power Source´s name", prompt="Write the Power Source´s name",
-                                                   parent=self)
+                                                   parent=self.canvas)
         pwr_value = tk.simpledialog.askstring (title="Power Source´s value", prompt="Write the power source´s value",
-                                                    parent=self)
-        pw = Ele.PowerSource(self, pwr_name, pwr_value)
+                                                    parent=self.canvas)
+        pw = Ele.PowerSource(self.canvas, pwr_name, pwr_value)
         # self.r_list.append(r)
         pw.place(x=300, y=300)
 
@@ -95,10 +109,10 @@ class CircuitBuilder(tk.Frame):
 
     def add_resistor(self):
         resistor_name = tk.simpledialog.askstring(title="Resistor´s name", prompt="Write the resistor´s name"
-                                                  , parent=self)
+                                                  , parent=self.canvas)
         resistor_value = tk.simpledialog.askstring(title="Resistor´s value", prompt="Write the resistor´s value",
-                                                   parent=self)
-        r = Ele.Resistor(self, resistor_name, resistor_value)
+                                                   parent=self.canvas)
+        r = Ele.Resistor(self.canvas, resistor_name, resistor_value)
         # self.r_list.append(r)
         r.place(x=300, y=300)
         self.make_draggable(r)
@@ -145,7 +159,8 @@ class Application(tk.Tk):
         frame.tkraise()
 
     def set_netlist(self):
-        self.netlist_file = filedialog.askopenfile(mode="r", filetypes=[("Netlist files","*.cir")])
+        self.netlist_file = filedialog.askopenfile(mode="r", filetypes=[("Netlist files", "*.cir")])
+
     def getnetlist(self):
         return self.netlist_file
 

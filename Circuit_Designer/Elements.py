@@ -70,6 +70,7 @@ class PowerSource(ElectricalElement):
         ElectricalElement.__init__(self, master, name, value, conn_a, conn_b)
         self.set_image("images/Fuente.png")
         self.update()
+
     def rotate(self, event):
         if self.position==1:
             self.set_image("images/Fuente.png")
