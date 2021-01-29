@@ -7,6 +7,7 @@ from tkinter import simpledialog
 import threading
 import Grafo as g
 
+
 class StartPage (tk.Frame):
     """
     This is the start page frame. It offers the possibility between choosing a netlist file to build a circuit or building

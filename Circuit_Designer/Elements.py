@@ -57,7 +57,7 @@ class ElectricalElement (tk.Canvas):
         self.b_btn.place(x=90, y=25)
 
 
-        #position
+        #position (0 horizontal, 1 vertical)
         self.position = 0
     def set_image(self, imagepath):
         load = Image.open(imagepath)
