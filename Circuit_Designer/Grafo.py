@@ -16,6 +16,9 @@ class Grafo:
 			newDic[Node.getName] = Node.getConnections
 		return newDic
 
+	def setNodo(self,node):
+		self.NodeList.append
+
 
 
 
